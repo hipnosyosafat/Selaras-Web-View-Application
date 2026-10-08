@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>SELARAS — Habit & Self-Development</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans (Standar MD3 Modern) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            selaras: {
+              primary: '#2FB369',
+              'primary-dark': '#249B58',
+              'primary-light': '#E3F7EE',
+              bg: '#D2F3E7',
+              'bg-subtle': '#EEFBF6',
+              surface: '#F4FCF8',
+              card: '#FFFFFF',
+              text: '#1E4338',
+              muted: '#62897C',
+              danger: '#E22828',
+              'danger-dark': '#C61E1E'
+            }
+          },
+          borderRadius: {
+            '2xl': '18px',
+            '3xl': '24px',
+            '4xl': '32px'
+          },
+          boxShadow: {
+            'soft': '0 8px 24px -4px rgba(35, 136, 92, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.03)',
+            'btn': '0 8px 20px -4px rgba(47, 179, 105, 0.35)',
+            'card': '0 6px 20px -3px rgba(35, 136, 92, 0.07)',
+            'modal': '0 20px 40px -10px rgba(18, 54, 43, 0.25)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Safe-Area & Android Material Enhancements */
+    :root {
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
+      --sal: env(safe-area-inset-left, 0px);
+      --sar: env(safe-area-inset-right, 0px);
+    }
+
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      box-sizing: border-box;
+    }
+
+    input, textarea {
+      user-select: auto;
+      font-size: 16px !important; /* Mencegah auto-zoom liar pada Android/iOS WebView */
+    }
+
+    /* Background Zen Wallpaper Khas Selaras (Organic Fluid Waves) */
+    .bg-selaras-gradient {
+      background-color: #9DE2CD;
+      background-image: url('background.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* SVG Progress Ring Animation */
+    .progress-ring__circle {
+      transition: stroke-dashoffset 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Touch Friendly Smooth Scroll */
+    .smooth-scroll {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+    }
+
+    /* Custom Minimalist Scrollbar */
+    ::-webkit-scrollbar {
+      width: 0px;
+      height: 0px;
+      background: transparent;
+    }
+
+    /* Icon Choice Selector (Figma Spec: #2FB369 Stroke/Icon unselected, #2FB369 Fill + #ffffff Stroke/Icon selected) */
+    .icon-choice {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+    }
+    .icon-choice.is-unselected {
+      background-color: rgba(234, 251, 243, 0.75) !important;
+      border: 2px solid #2FB369 !important;
+      box-shadow: none !important;
+      transform: scale(1);
+    }
+    .icon-choice.is-unselected img {
+      filter: none !important;
+    }
+    .icon-choice.is-selected {
+      background-color: #2FB369 !important;
+      border: 2.5px solid #ffffff !important;
+      box-shadow: 0 8px 20px -3px rgba(47, 179, 105, 0.45) !important;
+      transform: scale(1.05);
+    }
+    .icon-choice.is-selected img {
+      filter: brightness(0) invert(1) !important;
+    }
+
+    .icon-filter-white {
+      filter: brightness(0) invert(1) !important;
+    }
+
+    /* ========================================================
+       SMOOTH SCREEN & COMPONENT TRANSITIONS (ZEN / MINDFUL MOTION)
+    ======================================================== */
+    .app-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: scale(0.985);
+      transition: opacity 0.32s cubic-bezier(0.2, 0.8, 0.2, 1),
+                  transform 0.32s cubic-bezier(0.2, 0.8, 0.2, 1),
+                  visibility 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+      will-change: opacity, transform;
+    }
+
+    .app-screen.screen-active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    /* Splash Screen Special Dissolve Transition */
+    #screen-splash.app-screen {
+      z-index: 50;
+      transform: scale(1);
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+    }
+
+    /* Add Habit Screen: Native Android Bottom-Sheet Slide Up / Down */
+    #screen-add-habit.app-screen {
+      transform: translateY(100%);
+      opacity: 1;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: 40;
+      transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.36s;
+      will-change: transform;
+    }
+
+    #screen-add-habit.app-screen.screen-active {
+      transform: translateY(0);
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    /* Modal Backdrop & Dialog Spring */
+    .app-modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background-color: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0.25s;
+      z-index: 50;
+    }
+
+    .app-modal.modal-active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .app-modal .modal-card {
+      transform: scale(0.92) translateY(12px);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+
+    .app-modal.modal-active .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    /* Smooth Carousel Drift for Onboarding */
+    #onboarding-touch-area {
+      will-change: transform, opacity;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center font-sans antialiased sm:py-6 selection:bg-emerald-200">
+
+  <!-- ======================================================== -->
+  <!-- ANDROID FRAME CONTAINER (Responsif Android WebView & Desktop Mockup) -->
+  <!-- ======================================================== -->
+  <main class="w-full sm:w-[412px] h-[100dvh] min-h-screen sm:min-h-0 sm:h-[860px] bg-selaras-gradient sm:rounded-[40px] sm:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.5)] relative overflow-hidden flex flex-col sm:border sm:border-emerald-300/40">
+
+    <!-- STATUS BAR: Tampil di Desktop Simulator, Adaptif Safe-Area di WebView Mobile -->
+    <header class="w-full pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] px-6 pb-1 hidden sm:flex justify-between items-center text-selaras-text/80 text-xs font-semibold shrink-0 z-30 select-none">
+      <span id="android-clock">09:41</span>
+      <div class="flex items-center space-x-1.5 text-selaras-text/75">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 18.23c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l.62-.62C7.93 20.26 9.88 21 12 21s4.07-.74 5.61-1.97l.62.62c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-.62-.62C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"/></svg>
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5z"/></svg>
+        <svg class="w-4 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M17 4h-3V2h-4v2H7v18h10V4z"/></svg>
+      </div>
+    </header>
+
+    <!-- Mobile Safe-Area Notch Spacer -->
+    <div class="sm:hidden pt-[env(safe-area-inset-top,0.5rem)] w-full shrink-0"></div>
+
+    <!-- CONTAINER SEMUA SCREEN (SPA NAVIGATION STACK) -->
+    <section class="flex-1 relative overflow-hidden flex flex-col">
+
+      <!-- ============================================== -->
+      <!-- 1. SPLASH SCREEN -->
+      <!-- ============================================== -->
+      <article id="screen-splash" class="app-screen screen-active flex flex-col items-center justify-center p-8 z-50 bg-selaras-gradient">
+        <div class="w-36 h-36 sm:w-40 sm:h-40 mb-6 relative flex items-center justify-center animate-pulse">
+          <img src="Selaras Logo PNG.png" alt="Selaras Logo" class="w-full h-full object-contain drop-shadow-sm select-none">
+        </div>
+        <h1 class="text-3xl font-extrabold text-selaras-text tracking-wide mb-2">SELARAS</h1>
+        <p class="text-xs sm:text-sm font-medium text-selaras-muted text-center max-w-[240px]">Keseimbangan dalam setiap langkah.</p>
+      </article>
+
+      <!-- ============================================== -->
+      <!-- 2. ONBOARDING SCREEN (3 Slide Carousel + Touch Swipe) -->
+      <!-- ============================================== -->
+      <article id="screen-onboarding" class="app-screen flex flex-col justify-between p-6 sm:p-8 z-30 bg-transparent overflow-y-auto overflow-x-hidden smooth-scroll">
+        <!-- Skip Button -->
+        <div class="flex justify-end pt-1">
+          <button onclick="goToAuth('login')" class="text-xs font-semibold text-selaras-muted tracking-wide px-3.5 py-1.5 rounded-full hover:bg-white/40 active:scale-95 transition">
+            Lewati
+          </button>
+        </div>
+
+        <!-- Slide Content Display (Touch Swipe Support) -->
+        <div id="onboarding-touch-area" class="flex-1 flex flex-col items-center justify-center text-center px-2 my-auto touch-pan-y cursor-grab">
+          <div id="onboarding-illus" class="w-52 h-52 sm:w-60 sm:h-60 mb-6 flex items-center justify-center transition-all duration-300">
+            <!-- Disuntikkan via JS -->
+          </div>
+          
+          <h2 id="onboarding-title" class="text-xl sm:text-2xl font-bold text-selaras-text mb-2.5 px-2 leading-tight">
+            Bangun Kebiasaan Positif
+          </h2>
+          <p id="onboarding-desc" class="text-sm sm:text-base font-medium text-selaras-muted leading-relaxed max-w-[310px]">
+            Bentuk rutinitas kecil yang konsisten untuk mendukung keseimbangan hidupmu.
+          </p>
+        </div>
+
+        <!-- Footer Navigasi -->
+        <footer class="flex flex-col items-center pb-4 sm:pb-6 space-y-6 shrink-0">
+          <div class="flex space-x-2" id="onboarding-dots">
+            <span class="w-6 h-2 rounded-full bg-selaras-text transition-all duration-300"></span>
+            <span class="w-2 h-2 rounded-full bg-selaras-text/30 transition-all duration-300"></span>
+            <span class="w-2 h-2 rounded-full bg-selaras-text/30 transition-all duration-300"></span>
+          </div>
+
+          <div class="w-full flex items-center justify-between px-2" id="onboarding-actions-container">
+            <button id="btn-onboarding-back" onclick="prevOnboarding()" class="w-12 h-12 rounded-full bg-white/70 text-selaras-text flex items-center justify-center border border-white opacity-0 pointer-events-none active:scale-95 transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            </button>
+
+            <div id="onboarding-next-wrapper" class="ml-auto">
+              <button id="btn-onboarding-next" onclick="nextOnboarding()" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-selaras-primary text-white flex items-center justify-center shadow-btn active:scale-95 transition-all">
+                <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+        </footer>
+      </article>
+
+      <!-- ============================================== -->
+      <!-- 3. AUTH SCREEN (Login & Registrasi Sesuai PRD) -->
+      <!-- ============================================== -->
+      <article id="screen-auth" class="app-screen flex flex-col px-6 sm:px-8 py-6 z-30 bg-transparent overflow-y-auto smooth-scroll">
+        <div class="w-full max-w-sm my-auto py-4">
+          <div class="flex flex-col items-center mb-6">
+            <div class="w-24 h-24 sm:w-28 sm:h-28 mb-3 flex items-center justify-center">
+              <img src="Selaras Logo PNG.png" alt="Selaras Logo" class="w-full h-full object-contain select-none">
+            </div>
+            <h2 id="auth-title" class="text-xl sm:text-2xl font-bold text-selaras-text tracking-tight text-center">Selamat Datang Kembali</h2>
+            <p id="auth-subtitle" class="text-xs text-selaras-muted font-medium mt-1 text-center">Masuk untuk melanjutkan ritme keselarasanmu.</p>
+          </div>
+
+          <form onsubmit="event.preventDefault();" class="w-full space-y-3.5">
+            <div id="auth-fullname-container" class="hidden">
+              <label class="block text-xs font-semibold text-selaras-muted mb-1 ml-1">Nama Lengkap</label>
+              <input type="text" id="auth-fullname" placeholder="Nama lengkap Anda..." class="w-full px-4 py-3 rounded-2xl bg-white/85 border border-white focus:outline-none focus:ring-2 focus:ring-selaras-primary text-selaras-text placeholder-selaras-muted/50 shadow-sm transition">
+            </div>
+
+            <div>
+              <label id="auth-user-label" class="block text-xs font-semibold text-selaras-muted mb-1 ml-1">Nama Pengguna atau Email</label>
+              <input type="text" id="auth-username" placeholder="Masukkan nama atau email..." class="w-full px-4 py-3 rounded-2xl bg-white/85 border border-white focus:outline-none focus:ring-2 focus:ring-selaras-primary text-selaras-text placeholder-selaras-muted/50 shadow-sm transition" autocomplete="username">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-selaras-muted mb-1 ml-1">Kata Sandi</label>
+              <input type="password" id="auth-password" placeholder="••••••••" class="w-full px-4 py-3 rounded-2xl bg-white/85 border border-white focus:outline-none focus:ring-2 focus:ring-selaras-primary text-selaras-text placeholder-selaras-muted/50 shadow-sm transition" autocomplete="current-password">
+            </div>
+
+            <div id="auth-confirm-container" class="hidden">
+              <label class="block text-xs font-semibold text-selaras-muted mb-1 ml-1">Konfirmasi Kata Sandi</label>
+              <input type="password" id="auth-password-confirm" placeholder="••••••••" class="w-full px-4 py-3 rounded-2xl bg-white/85 border border-white focus:outline-none focus:ring-2 focus:ring-selaras-primary text-selaras-text placeholder-selaras-muted/50 shadow-sm transition" autocomplete="new-password">
+            </div>
+
+            <div id="auth-forgot-box" class="flex justify-end pr-1 pt-0.5">
+              <button type="button" onclick="showToast('Prototipe: Gunakan kata sandi apa saja untuk demonstrasi.', '💡')" class="text-xs font-semibold text-selaras-muted hover:text-selaras-text transition">
+                Lupa Kata Sandi?
+              </button>
+            </div>
+
+            <div id="auth-error" class="hidden p-3 rounded-xl bg-red-100/90 border border-red-200 text-xs text-red-700 font-medium text-center animate-in fade-in duration-200"></div>
+
+            <div id="auth-login-actions" class="pt-2 flex items-center space-x-3">
+              <button type="button" onclick="handleAuthSubmit('login')" class="flex-1 py-3.5 px-4 rounded-2xl bg-selaras-primary text-white font-semibold text-sm shadow-btn active:scale-95 transition">
+                Masuk
+              </button>
+              <button type="button" onclick="toggleAuthMode('register')" class="flex-1 py-3.5 px-4 rounded-2xl bg-white/90 text-selaras-primary font-semibold text-sm border border-selaras-primary/30 active:scale-95 transition">
+                Daftar
+              </button>
+            </div>
+
+            <div id="auth-register-actions" class="hidden pt-2 flex flex-col space-y-3">
+              <button type="button" onclick="handleAuthSubmit('register')" class="w-full py-3.5 rounded-2xl bg-selaras-primary text-white font-semibold text-sm shadow-btn active:scale-95 transition">
+                Daftar Sekarang
+              </button>
+              <p class="text-center text-xs font-semibold text-selaras-muted">
+                Sudah memiliki akun? 
+                <button type="button" onclick="toggleAuthMode('login')" class="text-selaras-primary underline font-bold ml-1">Masuk</button>
+              </p>
+            </div>
+
+            <!-- Tombol Cepat Preview Onboarding untuk Pengujian / Demo -->
+            <div class="pt-4 border-t border-emerald-300/30 text-center">
+              <button type="button" onclick="resetAndPreviewOnboarding()" class="text-xs font-semibold text-selaras-muted hover:text-selaras-text transition inline-flex items-center space-x-1.5 py-1.5 px-3.5 rounded-full hover:bg-white/40 active:scale-95">
+                <span>🔄</span>
+                <span>Lihat / Putar Ulang Onboarding</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </article>
+
+      <!-- ============================================== -->
+      <!-- 4. DASHBOARD UTAMA (Screen Utama Selaras) -->
+      <!-- ============================================== -->
+      <article id="screen-dashboard" class="app-screen flex flex-col px-5 sm:px-6 pt-3 sm:pt-4 z-20 overflow-y-auto smooth-scroll">
+        
+        <!-- Header Profil -->
+        <header class="w-full bg-white/90 backdrop-blur-md rounded-2xl p-4 flex items-center justify-between shadow-soft border border-white mb-4 shrink-0">
+          <div class="pr-2">
+            <h3 class="text-base sm:text-lg font-bold text-selaras-text">Selamat datang, <span id="dash-user-name">Pengguna</span>.</h3>
+            <p id="dash-sub-greeting" class="text-xs sm:text-sm text-selaras-muted font-medium mt-0.5">Mari jalani hari dengan sadar dan tenang.</p>
+          </div>
+          <button onclick="logoutPrompt()" title="Pengaturan Akun & Keluar" class="w-10 h-10 rounded-full bg-emerald-100/80 border border-emerald-200/60 flex items-center justify-center text-selaras-primary font-bold text-sm shrink-0 active:scale-95 transition shadow-sm">
+            <span id="dash-avatar-letter">P</span>
+          </button>
+        </header>
+
+        <!-- Visual Progress Circle Card -->
+        <div class="flex flex-col items-center justify-center my-1 shrink-0">
+          <div class="relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center">
+            <svg class="w-full h-full" viewBox="0 0 160 160">
+              <circle cx="80" cy="80" r="68" stroke="#D1EFE4" stroke-width="13" fill="none" opacity="0.9"/>
+              <circle id="progress-circle" class="progress-ring__circle" cx="80" cy="80" r="68" stroke="#2FA873" stroke-width="13" stroke-linecap="round" fill="none" stroke-dasharray="427.26" stroke-dashoffset="427.26" transform="rotate(-90 80 80)"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span id="progress-percent" class="text-2xl sm:text-3xl font-extrabold text-selaras-text tracking-tight">0%</span>
+              <span id="progress-fraction" class="text-xs sm:text-sm font-bold text-selaras-muted mt-1">0/0 Selesai</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner Pesan Motivasi Dinamis -->
+        <div class="w-full bg-white/85 backdrop-blur-sm rounded-2xl p-4 shadow-soft border border-white mt-3 mb-4 text-center shrink-0">
+          <p id="motivational-quote" class="text-sm sm:text-base font-semibold text-selaras-text leading-relaxed">
+            Hening dan tenang. Tanam satu kebiasaan kecil untuk merawat keselarasan dirimu hari ini.
+          </p>
+        </div>
+
+        <!-- Header Kebiasaan Hari Ini -->
+        <div class="flex items-center justify-between mb-3 px-1 shrink-0">
+          <h4 class="text-sm sm:text-base font-bold text-selaras-text tracking-tight">Kebiasaan Hari Ini</h4>
+          <span id="today-date" class="text-xs sm:text-sm font-bold text-emerald-800 bg-white/75 px-3 py-1 rounded-full border border-white/80 shadow-xs">Hari Ini</span>
+        </div>
+
+        <!-- CONTAINER DAFTAR KEBIASAAN -->
+        <div id="habit-container" class="space-y-3 pb-36">
+          <!-- State empty atau habit card di-generate oleh JS -->
+        </div>
+
+        <!-- TOMBOL UTAMA (+ TAMBAH KEBIASAAN) -->
+        <div class="fixed bottom-0 left-0 right-0 sm:absolute sm:bottom-0 p-5 sm:p-6 bg-gradient-to-t from-[#9DE2CD] via-[#9DE2CD]/90 to-transparent pt-6 pointer-events-none pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">
+          <button onclick="openAddHabitView()" class="pointer-events-auto w-full py-3.5 sm:py-4 rounded-2xl bg-selaras-primary hover:bg-selaras-primary-dark text-white font-bold text-sm shadow-btn active:scale-[0.98] transition flex items-center justify-center space-x-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            <span>Tambah Kebiasaan</span>
+          </button>
+        </div>
+      </article>
+
+      <!-- ============================================== -->
+      <!-- 5. SCREEN FORM TAMBAH KEBIASAAN (ADD HABIT SESUAI FIGMA USER) -->
+      <!-- ============================================== -->
+      <article id="screen-add-habit" class="app-screen flex flex-col px-5 sm:px-6 pt-3 pb-8 z-40 bg-selaras-gradient overflow-y-auto smooth-scroll">
+        
+        <!-- Top Navigation Header (Persis Figma) -->
+        <div class="relative flex items-center justify-center mb-6 pt-1 shrink-0">
+          <button onclick="closeAddHabitView()" class="absolute left-0 w-11 h-11 rounded-full bg-white/70 border border-white/80 flex items-center justify-center text-emerald-800 shadow-sm active:scale-95 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <h2 class="text-base sm:text-lg font-bold text-selaras-text">Tambah Kebiasaan</h2>
+        </div>
+
+        <!-- Pilihan Ikon (5 Piktogram Sesuai Tangkapan Layar Figma) -->
+        <div class="mb-6 shrink-0">
+          <label class="block text-sm sm:text-base font-bold text-selaras-text/85 mb-2.5 ml-1">Pilih Salah satu Icon</label>
+          <div id="icon-selector-card" class="bg-white/80 backdrop-blur-md p-3.5 sm:p-4 rounded-3xl border border-white shadow-soft flex justify-between items-center px-3.5 sm:px-5 transition-all duration-200">
+            <!-- 1. Daun (Meditasi) -->
+            <button type="button" data-icon="leaf" onclick="selectHabitIcon('leaf')" title="Daun" class="icon-choice is-unselected w-[54px] h-[54px] rounded-2xl flex items-center justify-center transition active:scale-95">
+              <img src="Daun icon.png" alt="Daun" class="w-7 h-7 object-contain pointer-events-none select-none transition-all duration-200">
+            </button>
+            <!-- 2. Buku (Membaca) -->
+            <button type="button" data-icon="book" onclick="selectHabitIcon('book')" title="Buku" class="icon-choice is-unselected w-[54px] h-[54px] rounded-2xl flex items-center justify-center active:scale-95">
+              <img src="buku icon.png" alt="Buku" class="w-7 h-7 object-contain pointer-events-none select-none transition-all duration-200">
+            </button>
+            <!-- 3. Air (Hidrasi) -->
+            <button type="button" data-icon="water" onclick="selectHabitIcon('water')" title="Air" class="icon-choice is-unselected w-[54px] h-[54px] rounded-2xl flex items-center justify-center active:scale-95">
+              <img src="droplet icon.png" alt="Air" class="w-7 h-7 object-contain pointer-events-none select-none transition-all duration-200">
+            </button>
+            <!-- 4. Hati (Kesehatan) -->
+            <button type="button" data-icon="heart" onclick="selectHabitIcon('heart')" title="Hati" class="icon-choice is-unselected w-[54px] h-[54px] rounded-2xl flex items-center justify-center active:scale-95">
+              <img src="love icon.png" alt="Hati" class="w-7 h-7 object-contain pointer-events-none select-none transition-all duration-200">
+            </button>
+            <!-- 5. Petir (Energi / Gerak) -->
+            <button type="button" data-icon="bolt" onclick="selectHabitIcon('bolt')" title="Petir" class="icon-choice is-unselected w-[54px] h-[54px] rounded-2xl flex items-center justify-center active:scale-95">
+              <img src="electric icon.png" alt="Petir" class="w-7 h-7 object-contain pointer-events-none select-none transition-all duration-200">
+            </button>
+          </div>
+          <!-- In-App Error Prevention: Ikon -->
+          <p id="err-icon" class="hidden text-xs text-red-600 font-semibold mt-2 ml-1 flex items-center space-x-1 animate-in fade-in duration-200">
+            <span>⚠️</span><span>Pilih salah satu ikon kebiasaan</span>
+          </p>
+        </div>
+
+        <!-- FORM CARD BESAR (JARAK INPUT LEGA SESUAI DESAIN FIGMA) -->
+        <div class="bg-white/55 backdrop-blur-md rounded-[32px] p-5 sm:p-6 border border-white/70 shadow-soft space-y-6 shrink-0 mb-6">
+          
+          <!-- 1. Nama Kebiasaan -->
+          <div>
+            <label class="block text-sm sm:text-base font-bold text-selaras-text/85 mb-2 ml-1">Nama Kebiasaan</label>
+            <input type="text" id="habit-name-input" placeholder="Contoh: Meditasi Pagi" class="w-full px-5 py-3.5 rounded-2xl bg-white/85 border border-emerald-300/40 focus:outline-none focus:ring-2 focus:ring-selaras-primary text-selaras-text placeholder-emerald-700/35 text-sm sm:text-base shadow-sm transition">
+            <!-- In-App Error Prevention: Nama -->
+            <p id="err-name" class="hidden text-xs sm:text-sm text-red-600 font-semibold mt-2 ml-1 flex items-center space-x-1 animate-in fade-in duration-200">
+              <span>⚠️</span><span>Nama kebiasaan wajib diisi</span>
+            </p>
+          </div>
+
+          <!-- 2. Target Minimal Harian (5, 10, 15, 20 Menit) -->
+          <div>
+            <label class="block text-sm sm:text-base font-bold text-selaras-text/85 mb-2 ml-1">Target Minimal Harian</label>
+            <div class="grid grid-cols-4 gap-2.5" id="duration-group">
+              <button type="button" data-target="5 Menit" onclick="selectHabitDuration('5 Menit')" class="dur-choice py-2.5 rounded-2xl border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-sm sm:text-base text-center transition active:scale-95">
+                5<br><span class="font-semibold text-xs sm:text-[13px]">Menit</span>
+              </button>
+              <button type="button" data-target="10 Menit" onclick="selectHabitDuration('10 Menit')" class="dur-choice py-2.5 rounded-2xl border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-sm sm:text-base text-center transition active:scale-95">
+                10<br><span class="font-semibold text-xs sm:text-[13px]">Menit</span>
+              </button>
+              <button type="button" data-target="15 Menit" onclick="selectHabitDuration('15 Menit')" class="dur-choice py-2.5 rounded-2xl border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-sm sm:text-base text-center transition active:scale-95">
+                15<br><span class="font-semibold text-xs sm:text-[13px]">Menit</span>
+              </button>
+              <button type="button" data-target="20 Menit" onclick="selectHabitDuration('20 Menit')" class="dur-choice py-2.5 rounded-2xl border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-sm sm:text-base text-center transition active:scale-95">
+                20<br><span class="font-semibold text-xs sm:text-[13px]">Menit</span>
+              </button>
+            </div>
+            <p class="text-xs sm:text-sm font-medium text-selaras-muted mt-2 ml-1">Minimal waktu komitmen setiap hari</p>
+            <!-- In-App Error Prevention: Target -->
+            <p id="err-target" class="hidden text-xs sm:text-sm text-red-600 font-semibold mt-2 ml-1 flex items-center space-x-1 animate-in fade-in duration-200">
+              <span>⚠️</span><span>Pilih salah satu target minimal harian</span>
+            </p>
+          </div>
+
+          <!-- 3. Waktu Pengingat (Pagi, Siang, Malam) -->
+          <div>
+            <label class="block text-sm sm:text-base font-bold text-selaras-text/85 mb-2 ml-1">Waktu Pengingat</label>
+            <div class="grid grid-cols-3 gap-2.5" id="reminder-group">
+              <button type="button" data-reminder="Pagi" onclick="selectHabitReminder('Pagi', '07:00')" class="rem-choice py-3.5 rounded-2xl border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm text-center transition active:scale-95">
+                Pagi
+              </button>
+              <button type="button" data-reminder="Siang" onclick="selectHabitReminder('Siang', '12:30')" class="rem-choice py-3.5 rounded-2xl border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm text-center transition active:scale-95">
+                Siang
+              </button>
+              <button type="button" data-reminder="Malam" onclick="selectHabitReminder('Malam', '20:00')" class="rem-choice py-3.5 rounded-2xl border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm text-center transition active:scale-95">
+                Malam
+              </button>
+            </div>
+            <!-- In-App Error Prevention: Pengingat -->
+            <p id="err-reminder" class="hidden text-xs sm:text-sm text-red-600 font-semibold mt-2 ml-1 flex items-center space-x-1 animate-in fade-in duration-200">
+              <span>⚠️</span><span>Pilih salah satu waktu pengingat</span>
+            </p>
+          </div>
+
+          <!-- 4. Hari Aktif (Sen, Sel, Rab, Kam, Jum, Sab, Min) -->
+          <div>
+            <label class="block text-sm sm:text-base font-bold text-selaras-text/85 mb-2 ml-1">Hari Aktif</label>
+            <div class="flex items-center justify-between gap-1 sm:gap-1.5" id="day-selector-group">
+              <button type="button" data-day="Sen" onclick="toggleActiveDay(this, 'Sen')" class="day-btn flex-1 h-12 rounded-[14px] border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm transition flex items-center justify-center active:scale-95">Sen</button>
+              <button type="button" data-day="Sel" onclick="toggleActiveDay(this, 'Sel')" class="day-btn flex-1 h-12 rounded-[14px] border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm transition flex items-center justify-center active:scale-95">Sel</button>
+              <button type="button" data-day="Rab" onclick="toggleActiveDay(this, 'Rab')" class="day-btn flex-1 h-12 rounded-[14px] border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm transition flex items-center justify-center active:scale-95">Rab</button>
+              <button type="button" data-day="Kam" onclick="toggleActiveDay(this, 'Kam')" class="day-btn flex-1 h-12 rounded-[14px] border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm transition flex items-center justify-center active:scale-95">Kam</button>
+              <button type="button" data-day="Jum" onclick="toggleActiveDay(this, 'Jum')" class="day-btn flex-1 h-12 rounded-[14px] border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm transition flex items-center justify-center active:scale-95">Jum</button>
+              <button type="button" data-day="Sab" onclick="toggleActiveDay(this, 'Sab')" class="day-btn flex-1 h-12 rounded-[14px] border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm transition flex items-center justify-center active:scale-95">Sab</button>
+              <button type="button" data-day="Min" onclick="toggleActiveDay(this, 'Min')" class="day-btn flex-1 h-12 rounded-[14px] border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm transition flex items-center justify-center active:scale-95">Min</button>
+            </div>
+            <!-- In-App Error Prevention: Hari -->
+            <p id="err-days" class="hidden text-xs sm:text-sm text-red-600 font-semibold mt-2 ml-1 flex items-center space-x-1 animate-in fade-in duration-200">
+              <span>⚠️</span><span>Pilih minimal satu hari aktif</span>
+            </p>
+          </div>
+
+          <!-- Banner Error Prevention Global Form -->
+          <div id="form-error-banner" class="hidden p-3.5 rounded-2xl bg-red-100/90 border border-red-300 text-xs sm:text-sm text-red-700 font-semibold text-center animate-in fade-in duration-200">
+            ⚠️ Beberapa isian belum dipilih. Mohon lengkapi bagian yang ditandai merah.
+          </div>
+
+          <!-- Tombol Simpan (Persis Figma) -->
+          <div class="pt-2">
+            <button onclick="saveNewHabit()" class="w-full py-4 rounded-3xl bg-selaras-primary hover:bg-selaras-primary-dark text-white font-bold text-sm shadow-btn active:scale-[0.98] transition flex items-center justify-center">
+              Simpan
+            </button>
+          </div>
+
+        </div>
+      </article>
+
+    </section>
+
+    <!-- ============================================== -->
+    <!-- 6. MODAL KONFIRMASI HAPUS (BR-05 ERROR PREVENTION) -->
+    <!-- ============================================== -->
+    <div id="modal-delete" class="app-modal">
+      <div class="modal-card w-full max-w-xs bg-white rounded-3xl p-5 shadow-modal border border-emerald-100 flex flex-col items-center">
+        
+        <div class="w-full flex items-center space-x-3 mb-3">
+          <div id="modal-habit-icon-badge" class="w-12 h-12 rounded-2xl border-2 border-selaras-primary/40 bg-selaras-primary/10 flex items-center justify-center text-selaras-primary shrink-0">
+            <!-- Disuntikkan via JS -->
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 id="modal-habit-title" class="text-sm font-bold text-selaras-text line-clamp-1 truncate">Jurnal Refleksi Diri</h4>
+            <p id="modal-habit-meta" class="text-xs text-selaras-muted font-medium">10 Menit · Setiap Hari</p>
+          </div>
+        </div>
+
+        <p class="text-xs text-selaras-muted text-center leading-relaxed mb-5">
+          Lepaskan kebiasaan ini? Setiap langkah membawa arti, namun kamu selalu bisa menanamnya kembali sewaktu-waktu.
+        </p>
+
+        <div class="w-full flex space-x-3">
+          <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-selaras-text font-bold text-xs active:scale-95 transition">
+            Tetap Simpan
+          </button>
+          <button id="btn-confirm-delete" class="flex-1 py-3 rounded-2xl bg-selaras-danger hover:bg-selaras-danger-dark text-white font-bold text-xs shadow-btn active:scale-95 transition">
+            Hapus
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- 7. MODAL KONFIRMASI KELUAR (PENGGANTI ALERT NATIVE) -->
+    <!-- ============================================== -->
+    <div id="modal-logout" class="app-modal">
+      <div class="modal-card w-full max-w-xs bg-white rounded-3xl p-5 shadow-modal border border-emerald-100 flex flex-col items-center">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-100/80 border border-emerald-200/60 flex items-center justify-center text-selaras-primary font-bold text-lg mb-3 shrink-0">
+          🌱
+        </div>
+        <h4 class="text-sm font-bold text-selaras-text text-center mb-1">Mulai Ulang Sesi?</h4>
+        <p class="text-xs text-selaras-muted text-center leading-relaxed mb-5">
+          Keluar dari akun akan mengatur ulang ke layar awal agar kamu dapat merasakan panduan onboarding dari awal.
+        </p>
+        <div class="w-full flex space-x-3">
+          <button onclick="closeLogoutModal()" class="flex-1 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-selaras-text font-bold text-xs active:scale-95 transition">
+            Batal
+          </button>
+          <button onclick="confirmLogout()" class="flex-1 py-3 rounded-2xl bg-selaras-primary hover:bg-selaras-primary-dark text-white font-bold text-xs shadow-btn active:scale-95 transition">
+            Keluar Sesi
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- 8. GLOBAL IN-APP TOAST (PENGGANTI BROWSER ALERT) -->
+    <!-- ============================================== -->
+    <div id="app-toast" class="fixed top-12 left-1/2 -translate-x-1/2 max-w-[340px] w-[90%] sm:w-auto px-4 py-3 rounded-2xl bg-slate-900/90 backdrop-blur-md text-white text-xs font-semibold shadow-2xl z-50 flex items-center space-x-2.5 transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-2">
+      <span id="toast-icon" class="text-base">✨</span>
+      <span id="toast-message" class="flex-1">Pemberitahuan</span>
+    </div>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT LOGIC LENGKAP -->
+  <!-- ======================================================== -->
+  <script>
+    /* ----------------------------------------------------
+       1. DATA DEFINITIONS & INITIAL STATE
+    ---------------------------------------------------- */
+    const STORAGE_KEY_USER = 'selaras_user_state';
+    const STORAGE_KEY_HABITS = 'selaras_habits_v2';
+    const STORAGE_KEY_ONBOARDING = 'selaras_onboarded';
+
+    // Slide Onboarding Sesuai Gambar Figma & PRD Flow 01
+    const onboardingSlides = [
+      {
+        title: "Bangun Kebiasaan Positif",
+        desc: "Bentuk rutinitas kecil yang konsisten untuk mendukung keseimbangan hidupmu.",
+        illustration: `
+          <div class="w-52 h-52 sm:w-60 sm:h-60 flex items-center justify-center p-2">
+            <img src="Kalender kedua PNG.png" alt="Bangun Kebiasaan Positif" class="max-w-full max-h-full object-contain drop-shadow-sm select-none pointer-events-none">
+          </div>
+        `
+      },
+      {
+        title: "Raih Versi Terbaik Dirimu",
+        desc: "Langkah kecil tanpa tekanan berlebih membantumu bertumbuh secara bertahap dan konsisten.",
+        illustration: `
+          <div class="w-52 h-52 sm:w-60 sm:h-60 flex items-center justify-center p-2">
+            <img src="TUnas PNG 1.png" alt="Raih Versi Terbaik Dirimu" class="max-w-full max-h-full object-contain drop-shadow-sm select-none pointer-events-none">
+          </div>
+        `
+      },
+      {
+        title: "Selaras Dengan Diri Sendiri",
+        desc: "Temukan keseimbangan dalam setiap langkah dan jalani hari dengan lebih sadar.",
+        illustration: `
+          <div class="w-52 h-52 sm:w-60 sm:h-60 flex items-center justify-center p-2">
+            <img src="Daun PNG 1.png" alt="Selaras Dengan Diri Sendiri" class="max-w-full max-h-full object-contain drop-shadow-sm select-none pointer-events-none">
+          </div>
+        `
+      }
+    ];
+
+    // Data Kebiasaan Awal: Kosong (Pengguna Menanam Kebiasaan Mandiri dari Nol)
+    const defaultGenZHabits = [];
+
+    // State Internal Aplikasi
+    let currentSlideIndex = 0;
+    let authMode = 'login';
+    let habitToDeleteId = null;
+
+    // Form Add Habit State: Default Kosong (User Bebas Memilih Sendiri)
+    let formHabitState = {
+      icon: null,
+      name: '',
+      target: null,
+      reminder: null,
+      reminderTime: null,
+      activeDays: []
+    };
+
+    /* ----------------------------------------------------
+       2. DATE & DAILY RESET UTILITIES
+    ---------------------------------------------------- */
+    function getTodayKey() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function getTodayDayShortName() {
+      const dayMap = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+      return dayMap[new Date().getDay()];
+    }
+
+    function isHabitActiveToday(habit) {
+      const todayShort = getTodayDayShortName();
+      return habit.activeDays && habit.activeDays.includes(todayShort);
+    }
+
+    function isHabitCompletedToday(habit) {
+      const todayKey = getTodayKey();
+      return Array.isArray(habit.completedDays) && habit.completedDays.includes(todayKey);
+    }
+
+    /* ----------------------------------------------------
+       3. IN-APP TOAST NOTIFICATION (PENGGANTI BROWSER ALERT)
+    ---------------------------------------------------- */
+    function showToast(message, icon = '✨', type = 'info') {
+      const toast = document.getElementById('app-toast');
+      const msgEl = document.getElementById('toast-message');
+      const iconEl = document.getElementById('toast-icon');
+      
+      msgEl.innerText = message;
+      iconEl.innerText = icon;
+
+      if (type === 'error') {
+        toast.classList.remove('bg-slate-900/90');
+        toast.classList.add('bg-red-900/95', 'border', 'border-red-500/60');
+      } else {
+        toast.classList.remove('bg-red-900/95', 'border', 'border-red-500/60');
+        toast.classList.add('bg-slate-900/90');
+      }
+
+      toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-2');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(window._toastTimeout);
+      window._toastTimeout = setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none', '-translate-y-2');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 2600);
+    }
+
+    /* ----------------------------------------------------
+       4. HABIT ICON RENDERER (5 IKON PNG PERSIS FIGMA USER)
+    ---------------------------------------------------- */
+    function getHabitSvgIcon(type, className = "w-6 h-6", isWhite = false) {
+      const iconMap = {
+        'leaf': 'Daun icon.png',
+        'book': 'buku icon.png',
+        'water': 'droplet icon.png',
+        'heart': 'love icon.png',
+        'bolt': 'electric icon.png'
+      };
+      const src = iconMap[type] || 'Daun icon.png';
+      const filterClass = isWhite ? 'icon-filter-white' : '';
+      return `<img src="${src}" class="${className} object-contain select-none pointer-events-none transition-all duration-200 ${filterClass}" alt="${type}">`;
+    }
+
+    /* ----------------------------------------------------
+       5. STORAGE MANAGEMENT
+    ---------------------------------------------------- */
+    function getStoredHabits() {
+      // Bersihkan cache data lawas yang masih menyimpan template bawaan (h-1 / h-2)
+      if (localStorage.getItem('selaras_habits_data')) {
+        localStorage.removeItem('selaras_habits_data');
+      }
+
+      const data = localStorage.getItem(STORAGE_KEY_HABITS);
+      if (!data) {
+        localStorage.setItem(STORAGE_KEY_HABITS, JSON.stringify([]));
+        return [];
+      }
+      try {
+        const habits = JSON.parse(data);
+        if (!Array.isArray(habits)) return [];
+        return habits.map(h => {
+          if (!Array.isArray(h.completedDays)) {
+            h.completedDays = h.completed ? [getTodayKey()] : [];
+          }
+          if (!h.target && h.duration) {
+            h.target = h.duration;
+          }
+          return h;
+        });
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveStoredHabits(habits) {
+      localStorage.setItem(STORAGE_KEY_HABITS, JSON.stringify(habits));
+    }
+
+    function getStoredUser() {
+      const u = localStorage.getItem(STORAGE_KEY_USER);
+      return u ? JSON.parse(u) : null;
+    }
+
+    function saveStoredUser(name, email = '') {
+      localStorage.setItem(STORAGE_KEY_USER, JSON.stringify({ 
+        username: name, 
+        email: email, 
+        loggedIn: true 
+      }));
+    }
+
+    /* ----------------------------------------------------
+       6. SCREEN NAVIGATION & HISTORY HANDLING
+    ---------------------------------------------------- */
+    let currentActiveScreenId = 'screen-splash';
+
+    function switchScreen(screenId, pushHistory = true) {
+      const screens = ['screen-splash', 'screen-onboarding', 'screen-auth', 'screen-dashboard', 'screen-add-habit'];
+
+      if (screenId === 'screen-add-habit') {
+        // Keep dashboard visible underneath while Add Habit slides up smoothly like native bottom sheet
+        const dashEl = document.getElementById('screen-dashboard');
+        if (dashEl) dashEl.classList.add('screen-active');
+
+        const addHabitEl = document.getElementById('screen-add-habit');
+        if (addHabitEl) {
+          addHabitEl.scrollTop = 0;
+          addHabitEl.classList.add('screen-active');
+        }
+        currentActiveScreenId = 'screen-add-habit';
+      } else {
+        // Normal screen switch: smooth serene crossfade
+        screens.forEach(id => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          if (id === screenId) {
+            el.classList.add('screen-active');
+          } else {
+            el.classList.remove('screen-active');
+          }
+        });
+        currentActiveScreenId = screenId;
+      }
+
+      if (pushHistory && window.history && window.history.pushState) {
+        try {
+          window.history.pushState({ screen: screenId }, '', '#' + screenId);
+        } catch (e) {}
+      }
+    }
+
+    function closeAddHabitView() {
+      const addHabitEl = document.getElementById('screen-add-habit');
+      if (addHabitEl) {
+        addHabitEl.classList.remove('screen-active');
+      }
+      const dashEl = document.getElementById('screen-dashboard');
+      if (dashEl) {
+        dashEl.classList.add('screen-active');
+      }
+      currentActiveScreenId = 'screen-dashboard';
+      if (window.history && window.history.pushState) {
+        try {
+          window.history.pushState({ screen: 'screen-dashboard' }, '', '#screen-dashboard');
+        } catch (e) {}
+      }
+    }
+
+    window.addEventListener('popstate', function() {
+      const modalDelete = document.getElementById('modal-delete');
+      if (modalDelete && modalDelete.classList.contains('modal-active')) {
+        closeDeleteModal();
+        return;
+      }
+
+      const modalLogout = document.getElementById('modal-logout');
+      if (modalLogout && modalLogout.classList.contains('modal-active')) {
+        closeLogoutModal();
+        return;
+      }
+
+      const addHabitScreen = document.getElementById('screen-add-habit');
+      if (addHabitScreen && addHabitScreen.classList.contains('screen-active')) {
+        closeAddHabitView();
+        return;
+      }
+    });
+
+    /* ----------------------------------------------------
+       7. FLOW 01: SPLASH & ONBOARDING DENGAN SMOOTH TRANSITION
+    ---------------------------------------------------- */
+    function initAppFlow() {
+      updateAndroidClock();
+      setInterval(updateAndroidClock, 30000);
+
+      const options = { weekday: 'long', day: 'numeric', month: 'short' };
+      const todayStr = new Intl.DateTimeFormat('id-ID', options).format(new Date());
+      document.getElementById('today-date').innerText = todayStr;
+
+      initTouchGestures();
+      initLiveValidationListeners();
+
+      setTimeout(() => {
+        const user = getStoredUser();
+        const onboarded = localStorage.getItem(STORAGE_KEY_ONBOARDING);
+
+        // Pre-activate target screen underneath Splash
+        if (user && user.loggedIn) {
+          renderDashboard();
+          const target = document.getElementById('screen-dashboard');
+          if (target) target.classList.add('screen-active');
+          currentActiveScreenId = 'screen-dashboard';
+        } else if (!onboarded) {
+          renderOnboardingSlide(0);
+          const target = document.getElementById('screen-onboarding');
+          if (target) target.classList.add('screen-active');
+          currentActiveScreenId = 'screen-onboarding';
+        } else {
+          goToAuth('login');
+        }
+
+        // Dissolve splash screen smoothly (0.55s)
+        const splashEl = document.getElementById('screen-splash');
+        if (splashEl) {
+          splashEl.style.opacity = '0';
+          setTimeout(() => {
+            splashEl.classList.remove('screen-active');
+          }, 550);
+        }
+      }, 1400);
+    }
+
+    let isSlideTransitioning = false;
+
+    function renderOnboardingSlide(index, direction = null) {
+      if (isSlideTransitioning) return;
+      const oldIndex = currentSlideIndex;
+      currentSlideIndex = index;
+      const slide = onboardingSlides[index];
+
+      const touchArea = document.getElementById('onboarding-touch-area');
+
+      // Update dots and buttons immediately for instant user feedback
+      updateOnboardingControls(index);
+
+      // Initial render without animation
+      if (oldIndex === index || !touchArea) {
+        document.getElementById('onboarding-illus').innerHTML = slide.illustration;
+        document.getElementById('onboarding-title').innerText = slide.title;
+        document.getElementById('onboarding-desc').innerText = slide.desc;
+        return;
+      }
+
+      const dir = direction || (index > oldIndex ? 'next' : 'prev');
+      isSlideTransitioning = true;
+
+      // Exit slide animation (130ms)
+      const exitX = dir === 'next' ? -24 : 24;
+      const enterX = dir === 'next' ? 24 : -24;
+
+      touchArea.style.transition = 'opacity 0.14s cubic-bezier(0.4, 0, 1, 1), transform 0.14s cubic-bezier(0.4, 0, 1, 1)';
+      touchArea.style.opacity = '0';
+      touchArea.style.transform = `translateX(${exitX}px)`;
+
+      setTimeout(() => {
+        // Swap content
+        document.getElementById('onboarding-illus').innerHTML = slide.illustration;
+        document.getElementById('onboarding-title').innerText = slide.title;
+        document.getElementById('onboarding-desc').innerText = slide.desc;
+
+        // Position on incoming side
+        touchArea.style.transition = 'none';
+        touchArea.style.transform = `translateX(${enterX}px)`;
+
+        // Force reflow
+        void touchArea.offsetWidth;
+
+        // Enter slide animation (220ms)
+        touchArea.style.transition = 'opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)';
+        touchArea.style.opacity = '1';
+        touchArea.style.transform = 'translateX(0)';
+
+        setTimeout(() => {
+          isSlideTransitioning = false;
+        }, 230);
+      }, 140);
+    }
+
+    function updateOnboardingControls(index) {
+      const dots = document.getElementById('onboarding-dots').children;
+      for (let i = 0; i < dots.length; i++) {
+        if (i === index) {
+          dots[i].className = "w-6 h-2 rounded-full bg-selaras-text transition-all duration-300";
+        } else {
+          dots[i].className = "w-2 h-2 rounded-full bg-selaras-text/30 transition-all duration-300";
+        }
+      }
+
+      const backBtn = document.getElementById('btn-onboarding-back');
+      if (index > 0) {
+        backBtn.classList.remove('opacity-0', 'pointer-events-none');
+        backBtn.classList.add('opacity-100', 'pointer-events-auto');
+      } else {
+        backBtn.classList.add('opacity-0', 'pointer-events-none');
+        backBtn.classList.remove('opacity-100', 'pointer-events-auto');
+      }
+
+      const nextWrapper = document.getElementById('onboarding-next-wrapper');
+      if (index === onboardingSlides.length - 1) {
+        nextWrapper.innerHTML = `
+          <button onclick="nextOnboarding()" class="px-6 py-3.5 rounded-full bg-selaras-primary text-white font-bold text-xs sm:text-sm shadow-btn active:scale-95 transition-all flex items-center space-x-2">
+            <span>Mulai Sekarang</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        `;
+      } else {
+        nextWrapper.innerHTML = `
+          <button id="btn-onboarding-next" onclick="nextOnboarding()" aria-label="Lanjut" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-selaras-primary text-white flex items-center justify-center shadow-btn active:scale-95 transition-all">
+            <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        `;
+      }
+    }
+
+    function nextOnboarding() {
+      if (currentSlideIndex < onboardingSlides.length - 1) {
+        renderOnboardingSlide(currentSlideIndex + 1, 'next');
+      } else {
+        localStorage.setItem(STORAGE_KEY_ONBOARDING, 'true');
+        goToAuth('login');
+      }
+    }
+
+    function prevOnboarding() {
+      if (currentSlideIndex > 0) {
+        renderOnboardingSlide(currentSlideIndex - 1, 'prev');
+      }
+    }
+
+    function initTouchGestures() {
+      const area = document.getElementById('onboarding-touch-area');
+      if (!area) return;
+      let startX = 0;
+      let endX = 0;
+      let isDragging = false;
+
+      // Mobile Touch Listeners
+      area.addEventListener('touchstart', (e) => {
+        startX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      area.addEventListener('touchend', (e) => {
+        endX = e.changedTouches[0].screenX;
+        processSwipe(startX, endX);
+      }, { passive: true });
+
+      // Desktop Simulator Mouse Drag
+      area.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        area.classList.add('cursor-grabbing');
+      });
+
+      window.addEventListener('mouseup', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        area.classList.remove('cursor-grabbing');
+        endX = e.clientX;
+        processSwipe(startX, endX);
+      });
+
+      function processSwipe(sX, eX) {
+        const threshold = 40;
+        if (sX - eX > threshold) {
+          nextOnboarding();
+        } else if (eX - sX > threshold) {
+          prevOnboarding();
+        }
+      }
+    }
+
+    /* ----------------------------------------------------
+       8. FLOW 02: AUTHENTICATION
+    ---------------------------------------------------- */
+    function goToAuth(mode = 'login') {
+      toggleAuthMode(mode);
+      switchScreen('screen-auth');
+    }
+
+    function toggleAuthMode(mode) {
+      authMode = mode;
+      const title = document.getElementById('auth-title');
+      const subtitle = document.getElementById('auth-subtitle');
+      const fullnameContainer = document.getElementById('auth-fullname-container');
+      const confirmContainer = document.getElementById('auth-confirm-container');
+      const forgotBox = document.getElementById('auth-forgot-box');
+      const userLabel = document.getElementById('auth-user-label');
+      const loginActions = document.getElementById('auth-login-actions');
+      const registerActions = document.getElementById('auth-register-actions');
+      const errorBox = document.getElementById('auth-error');
+
+      errorBox.classList.add('hidden');
+
+      if (mode === 'login') {
+        title.innerText = 'Selamat Datang Kembali';
+        subtitle.innerText = 'Masuk untuk melanjutkan ritme keselarasanmu.';
+        userLabel.innerText = 'Nama Pengguna atau Email';
+        fullnameContainer.classList.add('hidden');
+        confirmContainer.classList.add('hidden');
+        forgotBox.classList.remove('hidden');
+        loginActions.classList.remove('hidden');
+        registerActions.classList.add('hidden');
+      } else {
+        title.innerText = 'Mulai Langkah Barumu';
+        subtitle.innerText = 'Daftar untuk menanam kebiasaan positif hari ini.';
+        userLabel.innerText = 'Nama Pengguna';
+        fullnameContainer.classList.remove('hidden');
+        confirmContainer.classList.remove('hidden');
+        forgotBox.classList.add('hidden');
+        loginActions.classList.add('hidden');
+        registerActions.classList.remove('hidden');
+      }
+    }
+
+    function handleAuthSubmit(action) {
+      const usernameInput = document.getElementById('auth-username').value.trim();
+      const passwordInput = document.getElementById('auth-password').value.trim();
+      const fullnameInput = document.getElementById('auth-fullname').value.trim();
+      const errorBox = document.getElementById('auth-error');
+
+      if (action === 'register' && !fullnameInput) {
+        errorBox.innerText = 'Mohon masukkan nama lengkap Anda.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+
+      if (!usernameInput) {
+        errorBox.innerText = 'Silakan masukkan nama pengguna atau email Anda.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+
+      if (!passwordInput) {
+        errorBox.innerText = 'Silakan masukkan kata sandi.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+
+      if (action === 'register') {
+        const confirmPass = document.getElementById('auth-password-confirm').value.trim();
+        if (passwordInput !== confirmPass) {
+          errorBox.innerText = 'Konfirmasi kata sandi tidak sesuai.';
+          errorBox.classList.remove('hidden');
+          return;
+        }
+      }
+
+      const displayName = action === 'register' && fullnameInput ? fullnameInput : usernameInput;
+      saveStoredUser(displayName, usernameInput.includes('@') ? usernameInput : '');
+      showToast(`Selamat datang, ${displayName}!`, '🌱', 'success');
+      renderDashboard();
+      switchScreen('screen-dashboard');
+    }
+
+    function logoutPrompt() {
+      const modal = document.getElementById('modal-logout');
+      if (modal) {
+        modal.classList.add('modal-active');
+      }
+    }
+
+    function closeLogoutModal() {
+      const modal = document.getElementById('modal-logout');
+      if (modal) {
+        modal.classList.remove('modal-active');
+      }
+    }
+
+    function confirmLogout() {
+      closeLogoutModal();
+      resetAndPreviewOnboarding();
+    }
+
+    function resetAndPreviewOnboarding() {
+      localStorage.removeItem(STORAGE_KEY_ONBOARDING);
+      localStorage.removeItem(STORAGE_KEY_USER);
+      localStorage.removeItem(STORAGE_KEY_HABITS);
+      localStorage.removeItem('selaras_habits_data');
+      renderOnboardingSlide(0);
+      switchScreen('screen-onboarding');
+      showToast('Memutar ulang onboarding awal 🍃', '✨');
+    }
+    window.resetOnboarding = resetAndPreviewOnboarding;
+
+    /* ----------------------------------------------------
+       9. FLOW 03: DASHBOARD & PROGRESS CALCULATION
+    ---------------------------------------------------- */
+    function renderDashboard() {
+      const user = getStoredUser() || { username: 'Pengguna' };
+      document.getElementById('dash-user-name').innerText = user.username;
+      document.getElementById('dash-avatar-letter').innerText = user.username.charAt(0).toUpperCase();
+
+      const habits = getStoredHabits();
+      const container = document.getElementById('habit-container');
+      container.innerHTML = '';
+
+      const activeHabitsToday = habits.filter(h => isHabitActiveToday(h));
+      const totalToday = activeHabitsToday.length;
+      const completedToday = activeHabitsToday.filter(h => isHabitCompletedToday(h)).length;
+      const percent = totalToday === 0 ? 0 : Math.round((completedToday / totalToday) * 100);
+
+      updateProgressUI(percent, completedToday, totalToday, habits.length);
+
+      if (habits.length === 0) {
+        container.innerHTML = `
+          <div class="w-full bg-white/85 backdrop-blur-sm rounded-3xl p-8 shadow-soft border border-white flex flex-col items-center justify-center text-center my-3 animate-in fade-in duration-300">
+            <div class="w-16 h-16 mb-3 flex items-center justify-center text-selaras-primary bg-selaras-primary/10 rounded-2xl">
+              <svg viewBox="0 0 100 100" class="w-12 h-12">
+                <path d="M50 85 C50 65 50 50 50 40" stroke="#2FA873" stroke-width="4" stroke-linecap="round"/>
+                <path d="M50 55 C35 55 25 40 30 30 C45 30 50 45 50 55 Z" fill="#469F7B"/>
+                <path d="M50 45 C65 45 75 30 70 20 C55 20 50 35 50 45 Z" fill="#7AC9A8"/>
+              </svg>
+            </div>
+            <h5 class="text-sm font-bold text-selaras-text mb-1">Belum ada kebiasaan yang ditanam.</h5>
+            <p class="text-xs text-selaras-muted max-w-[220px] leading-relaxed">
+              Mulai dengan satu kebiasaan kecil tanpa tekanan untuk menumbuhkan keselarasanmu.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      habits.forEach((habit) => {
+        const isActiveToday = isHabitActiveToday(habit);
+        const isCompleted = isHabitCompletedToday(habit);
+
+        const card = document.createElement('div');
+        card.className = "group relative w-full bg-white/95 rounded-2xl p-4 border border-white shadow-soft transition-all duration-200";
+
+        card.innerHTML = `
+          <div class="w-full flex items-center justify-between">
+            <div class="flex items-center space-x-3.5 pr-2 flex-1 min-w-0 ${isActiveToday ? 'cursor-pointer' : 'opacity-70'}" onclick="${isActiveToday ? `toggleHabitCheck('${habit.id}')` : ''}">
+              <div class="w-12 h-12 rounded-2xl border-2 ${isCompleted ? 'border-white bg-[#2FB369] shadow-btn' : 'border-[#2FB369] bg-[#EAFBF3]/70'} flex items-center justify-center shrink-0 transition-all duration-200">
+                ${getHabitSvgIcon(habit.icon, "w-6 h-6", isCompleted)}
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center space-x-2">
+                  <h5 class="text-sm sm:text-base font-bold text-selaras-text truncate ${isCompleted ? 'line-through text-selaras-text/50' : ''}">${habit.name}</h5>
+                </div>
+                <div class="flex items-center space-x-1.5 mt-0.5 text-xs sm:text-sm font-semibold ${isCompleted ? 'text-emerald-700/60' : 'text-emerald-700'}">
+                  <span>${habit.target || 'Rutinitas'}</span>
+                  <span class="text-selaras-muted/50 font-normal">·</span>
+                  <span class="text-selaras-muted/80 font-normal">${habit.reminderTime ? `${habit.reminderName || 'Pengingat'} ${habit.reminderTime}` : 'Setiap Hari'}</span>
+                  ${!isActiveToday ? `<span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[11px] sm:text-xs font-semibold ml-1">Hari Istirahat</span>` : ''}
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-2 shrink-0">
+              ${isActiveToday ? `
+                <button onclick="toggleHabitCheck('${habit.id}')" aria-label="Tandai Selesai" class="w-8 h-8 rounded-full border-2 ${isCompleted ? 'border-[#2FB369] bg-[#2FB369] text-white shadow-btn' : 'border-[#2FB369]/70 bg-transparent text-transparent'} flex items-center justify-center transition-all active:scale-90 shadow-xs">
+                  <svg class="w-4 h-4 ${isCompleted ? 'opacity-100' : 'opacity-0'}" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              ` : `
+                <div title="Tidak dijadwalkan hari ini" class="w-8 h-8 rounded-full border-2 border-slate-200 bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
+                  -
+                </div>
+              `}
+
+              <button onclick="promptDeleteHabit('${habit.id}')" title="Kelola / Hapus Kebiasaan" class="w-8 h-8 rounded-full hover:bg-red-50 text-selaras-muted/50 hover:text-selaras-danger flex items-center justify-center transition-colors active:scale-95 ml-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function updateProgressUI(percent, completed, totalToday, totalHabits) {
+      const circle = document.getElementById('progress-circle');
+      const percentText = document.getElementById('progress-percent');
+      const fractionText = document.getElementById('progress-fraction');
+      const quoteText = document.getElementById('motivational-quote');
+
+      const circumference = 427.26;
+      const offset = circumference - (percent / 100 * circumference);
+      
+      circle.style.strokeDashoffset = offset;
+      percentText.innerText = `${percent}%`;
+      fractionText.innerText = `${completed}/${totalToday} Selesai`;
+
+      if (totalHabits === 0) {
+        quoteText.innerText = "Hening dan tenang. Tanam satu kebiasaan kecil untuk merawat keselarasan dirimu hari ini.";
+      } else if (totalToday === 0) {
+        quoteText.innerText = "Hari ini adalah waktu istirahat bagi kebiasaanmu. Nikmati jeda dengan penuh kesadaran.";
+      } else if (percent === 0) {
+        quoteText.innerText = "Setiap hari baru adalah lembaran bersih. Mulai satu langkah kecil tanpa tergesa-gesa.";
+      } else if (percent > 0 && percent < 100) {
+        quoteText.innerText = "Napas perlahan, nikmati prosesnya. Kamu sedang bertumbuh selaras dengan ritmemu sendiri.";
+      } else if (percent === 100) {
+        quoteText.innerText = "Alhamdulillah, semua kebiasaan hari ini telah tuntas. Jiwa dan harimu berjalan selaras sempurna.";
+      }
+    }
+
+    /* ----------------------------------------------------
+       10. FLOW 04: HABIT CHECKLIST & REVERSE TOGGLE
+    ---------------------------------------------------- */
+    function toggleHabitCheck(id) {
+      const todayKey = getTodayKey();
+      let habits = getStoredHabits();
+
+      habits = habits.map(h => {
+        if (h.id === id) {
+          if (!isHabitActiveToday(h)) {
+            showToast('Kebiasaan ini tidak dijadwalkan untuk hari ini.', '🌿', 'info');
+            return h;
+          }
+
+          if (!Array.isArray(h.completedDays)) {
+            h.completedDays = [];
+          }
+
+          const idx = h.completedDays.indexOf(todayKey);
+          if (idx > -1) {
+            h.completedDays.splice(idx, 1);
+            showToast('Status kebiasaan dibatalkan.', '↩️');
+          } else {
+            h.completedDays.push(todayKey);
+            showToast('Hebat! Satu kebiasaan telah tuntas.', '🌱', 'success');
+          }
+        }
+        return h;
+      });
+
+      saveStoredHabits(habits);
+      renderDashboard();
+    }
+
+    /* ----------------------------------------------------
+       11. FLOW 05: ADD HABIT (DEFAULT KOSONG & LIVE IN-APP ERROR PREVENTION)
+    ---------------------------------------------------- */
+    function openAddHabitView() {
+      // 1. Reset state menjadi KOSONG SEMUA (User bebas memilih sendiri)
+      formHabitState = {
+        icon: null,
+        name: '',
+        target: null,
+        reminder: null,
+        reminderTime: null,
+        activeDays: []
+      };
+
+      // 2. Reset input teks
+      const nameInput = document.getElementById('habit-name-input');
+      nameInput.value = '';
+      nameInput.classList.remove('border-red-400', 'ring-2', 'ring-red-200', 'bg-red-50/40');
+
+      // 3. Reset 5 Ikon (Unselected Outline State Sesuai Gambar Figma)
+      const iconCard = document.getElementById('icon-selector-card');
+      iconCard.classList.remove('border-red-400', 'ring-2', 'ring-red-200', 'bg-red-50/40');
+      const iconBtns = document.querySelectorAll('#icon-selector-card .icon-choice');
+      iconBtns.forEach(btn => {
+        btn.classList.remove('is-selected');
+        btn.classList.add('is-unselected');
+      });
+
+      // 4. Reset Target Minimal Harian (Unselected State)
+      const durBtns = document.querySelectorAll('#duration-group .dur-choice');
+      durBtns.forEach(btn => {
+        btn.className = "dur-choice py-2.5 rounded-2xl border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-sm sm:text-base text-center transition active:scale-95";
+      });
+
+      // 5. Reset Waktu Pengingat (Unselected State)
+      const remBtns = document.querySelectorAll('#reminder-group .rem-choice');
+      remBtns.forEach(btn => {
+        btn.className = "rem-choice py-3.5 rounded-2xl border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm text-center transition active:scale-95";
+      });
+
+      // 6. Reset Hari Aktif (Unselected State)
+      const dayBtns = document.querySelectorAll('#day-selector-group .day-btn');
+      dayBtns.forEach(btn => {
+        btn.className = "day-btn flex-1 h-12 rounded-[14px] border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm transition flex items-center justify-center active:scale-95";
+      });
+
+      // 7. Sembunyikan semua error prevention UI
+      document.getElementById('err-icon').classList.add('hidden');
+      document.getElementById('err-name').classList.add('hidden');
+      document.getElementById('err-target').classList.add('hidden');
+      document.getElementById('err-reminder').classList.add('hidden');
+      document.getElementById('err-days').classList.add('hidden');
+      document.getElementById('form-error-banner').classList.add('hidden');
+
+      switchScreen('screen-add-habit');
+    }
+
+    // Pemilihan Ikon
+    function selectHabitIcon(iconType) {
+      formHabitState.icon = iconType;
+      
+      // Bersihkan error ikon
+      document.getElementById('icon-selector-card').classList.remove('border-red-400', 'ring-2', 'ring-red-200', 'bg-red-50/40');
+      document.getElementById('err-icon').classList.add('hidden');
+      checkAndHideGlobalBanner();
+
+      const buttons = document.querySelectorAll('#icon-selector-card .icon-choice');
+      buttons.forEach(btn => {
+        if (btn.getAttribute('data-icon') === iconType) {
+          btn.classList.remove('is-unselected');
+          btn.classList.add('is-selected');
+        } else {
+          btn.classList.remove('is-selected');
+          btn.classList.add('is-unselected');
+        }
+      });
+    }
+
+    // Pemilihan Target Minimal Harian
+    function selectHabitDuration(targetText) {
+      formHabitState.target = targetText;
+
+      // Bersihkan error target
+      document.getElementById('err-target').classList.add('hidden');
+      checkAndHideGlobalBanner();
+
+      const buttons = document.querySelectorAll('#duration-group .dur-choice');
+      buttons.forEach(btn => {
+        if (btn.getAttribute('data-target') === targetText) {
+          btn.className = "dur-choice py-2.5 rounded-2xl border-2 border-white bg-[#2FB369] text-white font-bold text-sm sm:text-base text-center shadow-btn transition scale-102";
+        } else {
+          btn.className = "dur-choice py-2.5 rounded-2xl border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-sm sm:text-base text-center transition active:scale-95";
+        }
+      });
+    }
+
+    // Pemilihan Waktu Pengingat
+    function selectHabitReminder(name, time) {
+      formHabitState.reminder = name;
+      formHabitState.reminderTime = time;
+
+      // Bersihkan error reminder
+      document.getElementById('err-reminder').classList.add('hidden');
+      checkAndHideGlobalBanner();
+
+      const buttons = document.querySelectorAll('#reminder-group .rem-choice');
+      buttons.forEach(btn => {
+        if (btn.getAttribute('data-reminder') === name) {
+          btn.className = "rem-choice py-3.5 rounded-2xl border-2 border-white bg-[#2FB369] text-white font-bold text-xs sm:text-sm text-center shadow-btn transition scale-102";
+        } else {
+          btn.className = "rem-choice py-3.5 rounded-2xl border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm text-center transition active:scale-95";
+        }
+      });
+    }
+
+    // Toggle Hari Aktif (Multi-Select)
+    function toggleActiveDay(el, dayName) {
+      const idx = formHabitState.activeDays.indexOf(dayName);
+      if (idx > -1) {
+        formHabitState.activeDays.splice(idx, 1);
+        el.className = "day-btn flex-1 h-12 rounded-[14px] border-2 border-[#2FB369] bg-[#EAFBF3]/70 text-[#1E4338] font-bold text-xs sm:text-sm transition flex items-center justify-center active:scale-95";
+      } else {
+        formHabitState.activeDays.push(dayName);
+        el.className = "day-btn active-day flex-1 h-12 rounded-[14px] border-2 border-white bg-[#2FB369] text-white font-bold text-xs sm:text-sm shadow-btn transition flex items-center justify-center scale-102";
+      }
+
+      if (formHabitState.activeDays.length > 0) {
+        document.getElementById('err-days').classList.add('hidden');
+        checkAndHideGlobalBanner();
+      }
+    }
+
+    // Live Validation Listener saat Pengguna Mengisi Nama
+    function initLiveValidationListeners() {
+      const nameInput = document.getElementById('habit-name-input');
+      nameInput.addEventListener('input', function() {
+        if (this.value.trim().length > 0) {
+          this.classList.remove('border-red-400', 'ring-2', 'ring-red-200', 'bg-red-50/40');
+          document.getElementById('err-name').classList.add('hidden');
+          checkAndHideGlobalBanner();
+        }
+      });
+    }
+
+    function checkAndHideGlobalBanner() {
+      const hasHiddenErrName = document.getElementById('err-name').classList.contains('hidden');
+      const hasHiddenErrIcon = document.getElementById('err-icon').classList.contains('hidden');
+      const hasHiddenErrTarget = document.getElementById('err-target').classList.contains('hidden');
+      const hasHiddenErrReminder = document.getElementById('err-reminder').classList.contains('hidden');
+      const hasHiddenErrDays = document.getElementById('err-days').classList.contains('hidden');
+
+      if (hasHiddenErrName && hasHiddenErrIcon && hasHiddenErrTarget && hasHiddenErrReminder && hasHiddenErrDays) {
+        document.getElementById('form-error-banner').classList.add('hidden');
+      }
+    }
+
+    // Simpan Kebiasaan dengan In-App UI Error Prevention (Tanpa Alert Browser)
+    function saveNewHabit() {
+      const nameInput = document.getElementById('habit-name-input');
+      const name = nameInput.value.trim();
+
+      let hasError = false;
+      let firstErrorEl = null;
+
+      // 1. Validasi Ikon
+      const iconCard = document.getElementById('icon-selector-card');
+      const errIcon = document.getElementById('err-icon');
+      if (!formHabitState.icon) {
+        iconCard.classList.add('border-red-400', 'ring-2', 'ring-red-200', 'bg-red-50/40');
+        errIcon.classList.remove('hidden');
+        hasError = true;
+        if (!firstErrorEl) firstErrorEl = iconCard;
+      } else {
+        iconCard.classList.remove('border-red-400', 'ring-2', 'ring-red-200', 'bg-red-50/40');
+        errIcon.classList.add('hidden');
+      }
+
+      // 2. Validasi Nama Kebiasaan
+      const errName = document.getElementById('err-name');
+      if (!name) {
+        nameInput.classList.add('border-red-400', 'ring-2', 'ring-red-200', 'bg-red-50/40');
+        errName.classList.remove('hidden');
+        hasError = true;
+        if (!firstErrorEl) firstErrorEl = nameInput;
+      } else {
+        nameInput.classList.remove('border-red-400', 'ring-2', 'ring-red-200', 'bg-red-50/40');
+        errName.classList.add('hidden');
+      }
+
+      // 3. Validasi Target Minimal Harian
+      const errTarget = document.getElementById('err-target');
+      if (!formHabitState.target) {
+        errTarget.classList.remove('hidden');
+        hasError = true;
+        if (!firstErrorEl) firstErrorEl = document.getElementById('duration-group');
+      } else {
+        errTarget.classList.add('hidden');
+      }
+
+      // 4. Validasi Waktu Pengingat
+      const errReminder = document.getElementById('err-reminder');
+      if (!formHabitState.reminder) {
+        errReminder.classList.remove('hidden');
+        hasError = true;
+        if (!firstErrorEl) firstErrorEl = document.getElementById('reminder-group');
+      } else {
+        errReminder.classList.add('hidden');
+      }
+
+      // 5. Validasi Hari Aktif
+      const errDays = document.getElementById('err-days');
+      if (formHabitState.activeDays.length === 0) {
+        errDays.classList.remove('hidden');
+        hasError = true;
+        if (!firstErrorEl) firstErrorEl = document.getElementById('day-selector-group');
+      } else {
+        errDays.classList.add('hidden');
+      }
+
+      // Tampilkan Banner Global jika ada yang belum diisi
+      const globalBanner = document.getElementById('form-error-banner');
+      if (hasError) {
+        globalBanner.classList.remove('hidden');
+        if (firstErrorEl) {
+          firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        showToast('Mohon lengkapi bagian yang ditandai merah.', '⚠️', 'error');
+        return;
+      }
+
+      globalBanner.classList.add('hidden');
+
+      // Simpan Object Kebiasaan
+      const newHabit = {
+        id: 'h-' + Date.now(),
+        name: name,
+        icon: formHabitState.icon,
+        target: formHabitState.target,
+        reminderTime: formHabitState.reminderTime,
+        reminderName: formHabitState.reminder,
+        activeDays: [...formHabitState.activeDays],
+        completedDays: [],
+        createdAt: Date.now(),
+        status: 'active'
+      };
+
+      const habits = getStoredHabits();
+      habits.push(newHabit);
+      saveStoredHabits(habits);
+
+      showToast('Kebiasaan baru berhasil ditanam! 🌱', '✨', 'success');
+      renderDashboard();
+      closeAddHabitView();
+    }
+
+    /* ----------------------------------------------------
+       12. FLOW 06: DELETE HABIT DENGAN ERROR PREVENTION (BR-05)
+    ---------------------------------------------------- */
+    function promptDeleteHabit(habitId) {
+      const habits = getStoredHabits();
+      const habit = habits.find(h => h.id === habitId);
+      if (!habit) return;
+
+      habitToDeleteId = habitId;
+
+      document.getElementById('modal-habit-title').innerText = habit.name;
+      document.getElementById('modal-habit-meta').innerText = `${habit.target || 'Rutinitas'} · ${habit.reminderTime ? habit.reminderTime : 'Setiap Hari'}`;
+      document.getElementById('modal-habit-icon-badge').innerHTML = getHabitSvgIcon(habit.icon, "w-6 h-6");
+
+      const modal = document.getElementById('modal-delete');
+      if (modal) {
+        modal.classList.add('modal-active');
+      }
+    }
+
+    function closeDeleteModal() {
+      habitToDeleteId = null;
+      const modal = document.getElementById('modal-delete');
+      if (modal) {
+        modal.classList.remove('modal-active');
+      }
+    }
+
+    document.getElementById('btn-confirm-delete').addEventListener('click', function() {
+      if (!habitToDeleteId) return;
+
+      let habits = getStoredHabits();
+      habits = habits.filter(h => h.id !== habitToDeleteId);
+      saveStoredHabits(habits);
+
+      closeDeleteModal();
+      showToast('Kebiasaan telah dilepaskan.', '🍃');
+      renderDashboard();
+    });
+
+    /* ----------------------------------------------------
+       13. UTILITY: CLOCK UPDATE
+    ---------------------------------------------------- */
+    function updateAndroidClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const clockEl = document.getElementById('android-clock');
+      if (clockEl) {
+        clockEl.innerText = `${hours}:${minutes}`;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', initAppFlow);
+  </script>
+</body>
+</html>
