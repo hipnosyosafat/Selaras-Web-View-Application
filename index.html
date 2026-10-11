@@ -248,7 +248,7 @@
       <!-- 1. SPLASH SCREEN -->
       <!-- ============================================== -->
       <article id="screen-splash" class="app-screen screen-active flex flex-col items-center justify-center p-8 z-50 bg-selaras-gradient">
-        <div class="w-36 h-36 sm:w-40 sm:h-40 mb-6 relative flex items-center justify-center">
+        <div class="w-36 h-36 sm:w-40 sm:h-40 mb-6 relative flex items-center justify-center animate-pulse">
           <img src="Selaras Logo PNG.png" alt="Selaras Logo" class="w-full h-full object-contain drop-shadow-sm select-none">
         </div>
         <h1 class="text-3xl font-extrabold text-selaras-text tracking-wide mb-2">SELARAS</h1>
@@ -901,7 +901,6 @@
       initTouchGestures();
       initLiveValidationListeners();
 
-      /* [SEMENTARA DINONAKTIFKAN UNTUK DOKUMENTASI UI SPLASHSCREEN]
       setTimeout(() => {
         const user = getStoredUser();
         const onboarded = localStorage.getItem(STORAGE_KEY_ONBOARDING);
@@ -930,7 +929,6 @@
           }, 550);
         }
       }, 1400);
-      */
     }
 
     let isSlideTransitioning = false;
