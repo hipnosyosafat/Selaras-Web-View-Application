@@ -377,53 +377,56 @@
       <!-- ============================================== -->
       <!-- 4. DASHBOARD UTAMA (Screen Utama Selaras) -->
       <!-- ============================================== -->
-      <article id="screen-dashboard" class="app-screen flex flex-col px-5 sm:px-6 pt-3 sm:pt-4 z-20 overflow-y-auto smooth-scroll">
+      <article id="screen-dashboard" class="app-screen flex flex-col z-20 overflow-hidden">
         
-        <!-- Header Profil -->
-        <header class="w-full bg-white/90 backdrop-blur-md rounded-2xl p-4 flex items-center justify-between shadow-soft border border-white mb-4 shrink-0">
-          <div class="pr-2">
-            <h3 class="text-base sm:text-lg font-bold text-selaras-text">Selamat datang, <span id="dash-user-name">Pengguna</span>.</h3>
-            <p id="dash-sub-greeting" class="text-xs sm:text-sm text-selaras-muted font-medium mt-0.5">Mari jalani hari dengan sadar dan tenang.</p>
-          </div>
-          <button onclick="logoutPrompt()" title="Pengaturan Akun & Keluar" class="w-10 h-10 rounded-full bg-emerald-100/80 border border-emerald-200/60 flex items-center justify-center text-selaras-primary font-bold text-sm shrink-0 active:scale-95 transition shadow-sm">
-            <span id="dash-avatar-letter">P</span>
-          </button>
-        </header>
+        <!-- AREA SCROLLABLE DASHBOARD -->
+        <div id="dashboard-scroll-area" class="flex-1 overflow-y-auto smooth-scroll px-5 sm:px-6 pt-3 sm:pt-4 pb-28">
+          <!-- Header Profil -->
+          <header class="w-full bg-white/90 backdrop-blur-md rounded-2xl p-4 flex items-center justify-between shadow-soft border border-white mb-4 shrink-0">
+            <div class="pr-2">
+              <h3 class="text-base sm:text-lg font-bold text-selaras-text">Selamat datang, <span id="dash-user-name">Pengguna</span>.</h3>
+              <p id="dash-sub-greeting" class="text-xs sm:text-sm text-selaras-muted font-medium mt-0.5">Mari jalani hari dengan sadar dan tenang.</p>
+            </div>
+            <button onclick="logoutPrompt()" title="Pengaturan Akun & Keluar" class="w-10 h-10 rounded-full bg-emerald-100/80 border border-emerald-200/60 flex items-center justify-center text-selaras-primary font-bold text-sm shrink-0 active:scale-95 transition shadow-sm">
+              <span id="dash-avatar-letter">P</span>
+            </button>
+          </header>
 
-        <!-- Visual Progress Circle Card -->
-        <div class="flex flex-col items-center justify-center my-1 shrink-0">
-          <div class="relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center">
-            <svg class="w-full h-full" viewBox="0 0 160 160">
-              <circle cx="80" cy="80" r="68" stroke="#D1EFE4" stroke-width="13" fill="none" opacity="0.9"/>
-              <circle id="progress-circle" class="progress-ring__circle" cx="80" cy="80" r="68" stroke="#2FA873" stroke-width="13" stroke-linecap="round" fill="none" stroke-dasharray="427.26" stroke-dashoffset="427.26" transform="rotate(-90 80 80)"/>
-            </svg>
-            <div class="absolute inset-0 flex flex-col items-center justify-center">
-              <span id="progress-percent" class="text-2xl sm:text-3xl font-extrabold text-selaras-text tracking-tight">0%</span>
-              <span id="progress-fraction" class="text-xs sm:text-sm font-bold text-selaras-muted mt-1">0/0 Selesai</span>
+          <!-- Visual Progress Circle Card -->
+          <div class="flex flex-col items-center justify-center my-1 shrink-0">
+            <div class="relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center">
+              <svg class="w-full h-full" viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="68" stroke="#D1EFE4" stroke-width="13" fill="none" opacity="0.9"/>
+                <circle id="progress-circle" class="progress-ring__circle" cx="80" cy="80" r="68" stroke="#2FA873" stroke-width="13" stroke-linecap="round" fill="none" stroke-dasharray="427.26" stroke-dashoffset="427.26" transform="rotate(-90 80 80)"/>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span id="progress-percent" class="text-2xl sm:text-3xl font-extrabold text-selaras-text tracking-tight">0%</span>
+                <span id="progress-fraction" class="text-xs sm:text-sm font-bold text-selaras-muted mt-1">0/0 Selesai</span>
+              </div>
             </div>
           </div>
+
+          <!-- Banner Pesan Motivasi Dinamis -->
+          <div class="w-full bg-white/85 backdrop-blur-sm rounded-2xl p-4 shadow-soft border border-white mt-3 mb-4 text-center shrink-0">
+            <p id="motivational-quote" class="text-sm sm:text-base font-semibold text-selaras-text leading-relaxed">
+              Hening dan tenang. Tanam satu kebiasaan kecil untuk merawat keselarasan dirimu hari ini.
+            </p>
+          </div>
+
+          <!-- Header Kebiasaan Hari Ini -->
+          <div class="flex items-center justify-between mb-3 px-1 shrink-0">
+            <h4 class="text-sm sm:text-base font-bold text-selaras-text tracking-tight">Kebiasaan Hari Ini</h4>
+            <span id="today-date" class="text-xs sm:text-sm font-bold text-emerald-800 bg-white/75 px-3 py-1 rounded-full border border-white/80 shadow-xs">Hari Ini</span>
+          </div>
+
+          <!-- CONTAINER DAFTAR KEBIASAAN -->
+          <div id="habit-container" class="space-y-3">
+            <!-- State empty atau habit card di-generate oleh JS -->
+          </div>
         </div>
 
-        <!-- Banner Pesan Motivasi Dinamis -->
-        <div class="w-full bg-white/85 backdrop-blur-sm rounded-2xl p-4 shadow-soft border border-white mt-3 mb-4 text-center shrink-0">
-          <p id="motivational-quote" class="text-sm sm:text-base font-semibold text-selaras-text leading-relaxed">
-            Hening dan tenang. Tanam satu kebiasaan kecil untuk merawat keselarasan dirimu hari ini.
-          </p>
-        </div>
-
-        <!-- Header Kebiasaan Hari Ini -->
-        <div class="flex items-center justify-between mb-3 px-1 shrink-0">
-          <h4 class="text-sm sm:text-base font-bold text-selaras-text tracking-tight">Kebiasaan Hari Ini</h4>
-          <span id="today-date" class="text-xs sm:text-sm font-bold text-emerald-800 bg-white/75 px-3 py-1 rounded-full border border-white/80 shadow-xs">Hari Ini</span>
-        </div>
-
-        <!-- CONTAINER DAFTAR KEBIASAAN -->
-        <div id="habit-container" class="space-y-3 pb-36">
-          <!-- State empty atau habit card di-generate oleh JS -->
-        </div>
-
-        <!-- TOMBOL UTAMA (+ TAMBAH KEBIASAAN) -->
-        <div class="fixed bottom-0 left-0 right-0 sm:absolute sm:bottom-0 p-5 sm:p-6 bg-gradient-to-t from-[#9DE2CD] via-[#9DE2CD]/90 to-transparent pt-6 pointer-events-none pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">
+        <!-- TOMBOL UTAMA (+ TAMBAH KEBIASAAN) - TERKUNCI DI BAWAH -->
+        <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-6 bg-gradient-to-t from-[#9DE2CD] via-[#9DE2CD]/95 to-transparent pt-8 pointer-events-none pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] z-30">
           <button onclick="openAddHabitView()" class="pointer-events-auto w-full py-3.5 sm:py-4 rounded-2xl bg-selaras-primary hover:bg-selaras-primary-dark text-white font-bold text-sm shadow-btn active:scale-[0.98] transition flex items-center justify-center space-x-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
             <span>Tambah Kebiasaan</span>
